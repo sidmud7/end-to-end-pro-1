@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 from src.components.data_transformation import DataTransformation
 from src.components.data_transformation import DataTransformationConfig
+from src.components.model_trainer import ModelTrainerConfig
+from src.components.model_trainer import ModelTrainer
 
 # Initialize Data Ingestion Configuration
 @dataclass
@@ -21,7 +23,7 @@ class DataIngestion:
     def __init__(self):
         self.ingestion_config = DataIngestionConfig()
 
-    def initate_data_ingestion(self):
+    def initiate_data_ingestion(self):
         logging.info('Data ingestion method Started')
         try:
             df = pd.read_csv('notebook\data\stud.csv')
@@ -49,8 +51,21 @@ class DataIngestion:
             raise CustomException(e, sys)
     
 # Run Data ingestion
-if __name__ == "__main__":
+# Assuming you have a main execution block like this:
+if __name__ == '__main__':
+    # Initialize Data Ingestion
     obj = DataIngestion()
-    train_data,test_data=obj.initate_data_ingestion()
+    # Execute data ingestion, it returns the paths to the raw train/test CSVs
+    train_data_path, test_data_path = obj.initiate_data_ingestion()
+
+    # Initialize Data Transformation
     data_transformation = DataTransformation()
-    data_transformation.initiate_data_transformation(train_data,test_data)
+    # Execute data transformation, and CAPTURE its return values
+    # These are the transformed NumPy arrays and the path to the preprocessor object
+    train_arr, test_arr, preprocessor_path = data_transformation.initiate_data_transformation(train_data_path, test_data_path)
+
+    # Initialize Model Trainer
+    model_trainer = ModelTrainer()
+    # Now, pass the captured train_arr, test_arr, and preprocessor_path to model_trainer
+    r2_score = model_trainer.initiate_model_training(train_arr, test_arr, preprocessor_path) # Assuming it returns r2_score
+    print(f"Final Model R2 Score: {r2_score}")
